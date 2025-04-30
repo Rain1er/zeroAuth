@@ -1,7 +1,8 @@
 # zeroAuth
 
 ## 简介
-`zeroAuth` 是一个基于 montoya-api 开发的Burp Suite 的插件，旨在帮助安全研究人员和开发者快速发现和绕过身份验证机制的漏洞。
+`zeroAuth` 是一个基于 montoya-api 开发的Burp Suite 的插件，旨在帮助安全研究人员和开发者快速发现和绕过身份验证机制的漏洞。  
+
 参考项目：  
 
 https://github.com/0x727/BypassPro?tab=readme-ov-file  
