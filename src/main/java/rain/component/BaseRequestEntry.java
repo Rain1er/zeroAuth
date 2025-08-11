@@ -9,8 +9,8 @@ public class BaseRequestEntry {
 
     public BaseRequestEntry(String method, String path, Map<String, String> headers) {
         this.method = method;
-        this.headers = headers;
         this.path = path;
+        this.headers = headers;
     }
 
     public String toString() {

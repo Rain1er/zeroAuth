@@ -95,8 +95,8 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
                 Log.addAllRequestNum(payloads.size()*2);        //计算请求数量,因为要FUZZ不同方法，所以乘2
 
 
-                int thread_num = Utils.panel.getThreadNum();    //获取用户自定义线程
-                System.out.println(("start thread, number: " + String.valueOf(thread_num) + " path: " + old_path));
+                int thread_num = Utils.panel.getThreadNum();    //获取用户自定义线程数
+                System.out.println(("start thread, number: " + thread_num + " path: " + old_path));
 
                 //提交任务
                 ExecutorService es = Executors.newFixedThreadPool(thread_num);
@@ -157,7 +157,7 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
 
         public static boolean isScan(HttpRequestResponse httpRequestResponse){
             String path = httpRequestResponse.request().path().toLowerCase();       //注意这里path可以获得query参数
-            if (path.lastIndexOf(".") > -1) {  // 文件是这些静态后缀，不检测
+            if (path.lastIndexOf(".") > -1) {  // 请求的是静态文件，不检测
                 String extension = path.substring(path.lastIndexOf(".") + 1);
                 ArrayList<String> excludeExtensions = new ArrayList<>(Arrays.asList(    //from HAE
                         "3g2", "3gp", "7z", "aac", "abw", "aif", "aifc", "aiff", "apk", "arc", "au", "avi", "azw",

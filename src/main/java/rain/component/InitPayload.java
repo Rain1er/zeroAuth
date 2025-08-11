@@ -72,7 +72,7 @@ public class InitPayload {
 
         List<BaseRequestEntry> baseRequestList = new ArrayList();
 
-        for (Object item : (List)suffixList) {
+        for (Object item : suffixList) {
             //System.out.println( "/" + RequestURI + item);
             baseRequestList.add(new BaseRequestEntry("GET",  "/" + RequestURI + item, null));
         }
@@ -85,7 +85,7 @@ public class InitPayload {
 
         List<BaseRequestEntry> baseRequestList = new ArrayList();
 
-        for (Object item : (List)prefixList) {  //拿到所有payload
+        for (Object item : prefixList) {  //拿到所有payload
             for (int i=0; i < paths_len; i++) { //分别插入到每级目录前
                 String _target = paths[i];
                 paths[i] = item + _target;
@@ -105,7 +105,7 @@ public class InitPayload {
 
         List<BaseRequestEntry> baseRequestList = new ArrayList();
 
-        for (Object item : (List)midSuffixList) {  //拿到所有payload
+        for (Object item : midSuffixList) {  //拿到所有payload
             for (int i=0; i < paths_len-1; i++) { //分别插入到每级目录后,排除末尾目录
                 String _target = paths[i];
                 paths[i] =  _target + item;

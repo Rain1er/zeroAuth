@@ -26,7 +26,10 @@ public class Init implements BurpExtension {
         Utils.setPanel(dashboard);
         api.userInterface().registerSuiteTab("zeroAuth", dashboard);
 
+        // 设置右键菜单
         api.userInterface().registerContextMenuItemsProvider(new Scan());
+
+        // 注册请求处理器
         api.proxy().registerRequestHandler(new Scan());
     }
 

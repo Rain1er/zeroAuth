@@ -18,7 +18,6 @@ public class BypassEntry {
     final String tool;
 
     public BypassEntry(String timestamp, String method, int length, HttpRequestResponse requestResponse, String url, short status, String mimeType, String title, long id, String tool) {
-
         this.timestamp = timestamp;
         this.method = method;
         this.length = length;
