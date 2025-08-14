@@ -1,7 +1,7 @@
 package rain.component;
 
 import org.apache.commons.lang3.StringUtils;
-import rain.component.BaseRequestEntry;
+import org.w3c.dom.ls.LSException;
 import rain.utils.Utils;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class InitPayload {
     public InitPayload(){};
-    public List<BaseRequestEntry> make_payload_v2(String RequestURI,String query) {
+    public List<BaseRequestEntry> makePayload(String RequestURI, String query) {
         RequestURI = RequestURI.substring(1);
 
         Boolean endWithSlash = false;
@@ -26,7 +26,7 @@ public class InitPayload {
 
         List<BaseRequestEntry> allRequests = new ArrayList();
 
-        //1.末尾目录添加后缀
+        // 1.url末尾fuzz静态后缀，矩阵参数等
         Object suffix = Utils.configMap.get("suffix");
         if(endWithSlash) {
             allRequests.addAll(makeRequestSuffix((List<String>) suffix, RequestURI));
@@ -38,7 +38,7 @@ public class InitPayload {
 
         //2.每一级目录添加前缀
         Object prefix = Utils.configMap.get("prefix");
-        if( paths.length > 1) {
+        if( paths.length > 0) {
             int paths_len = paths.length;
             allRequests.addAll(makeRequestPrefix((List<String>) prefix, paths, paths_len));
         }
@@ -53,7 +53,7 @@ public class InitPayload {
 
         //3.添加认证header头
         Object headersList = Utils.configMap.get("headers");
-        allRequests.addAll(makeRequestHeader((List<?>) headersList, RequestURI));
+        allRequests.addAll(makeRequestHeader((List)headersList, RequestURI));
 
         //最后把查询参数加上
         //取得所有List<BaseRequestEntry> allRequests中BaseRequestEntry对象的path属性，并在其后面加上 "?"和query变量值覆盖原值
@@ -120,14 +120,11 @@ public class InitPayload {
         return baseRequestList;
     }
 
-    public static List<BaseRequestEntry> makeRequestHeader(List<?> headerList, String RequestURI){
+    // TODO 这里不生效，等待修复
+    public static List<BaseRequestEntry> makeRequestHeader(List headerList, String RequestURI){
         List<BaseRequestEntry> baseRequestList = new ArrayList();
         for (Object item : headerList) {
-
-            if(item instanceof Map){
-                baseRequestList.add(new BaseRequestEntry("GET",   "/" + RequestURI, (Map<String, String>) ((HashMap<String, String>) item).clone()));
-            }
-
+            baseRequestList.add(new BaseRequestEntry("GET",   "/" + RequestURI, (Map<String, String>) item));
         }
         return baseRequestList;
     }

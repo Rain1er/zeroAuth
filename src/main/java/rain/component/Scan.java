@@ -33,10 +33,10 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
         JMenuItem jMenuItem = new JMenuItem("Send to zeroAuth");
         //绑定点击事件，进行主动扫描。
         jMenuItem.addActionListener(e -> new Thread(() -> {
-            //这里有bug，只能从proxy里面拿条目进行扫描
+            // 这里修复了只能从proxy里面拿条目进行扫描的bug
             List<HttpRequestResponse> httpRequestResponses = new ArrayList<>();
-            //修复：从编辑框框发送、或从列表条目发送
-            if(!event.messageEditorRequestResponse().isEmpty()){
+            //修复：从编辑框框发送、或从列表条目发送。注意从request发送时，必须先请求 获得返回包
+            if(event.messageEditorRequestResponse().isPresent()){
                 httpRequestResponses.add(event.messageEditorRequestResponse().get().requestResponse());
             }else {
                 httpRequestResponses.addAll(event.selectedRequestResponses());
@@ -49,7 +49,7 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
         return list;
     }
 
-    //被动扫描
+    // 被动扫描状态码为302 401 403 404的请求
     @Override
     public ProxyRequestReceivedAction handleRequestReceived(InterceptedRequest interceptedRequest) {
         HttpRequestResponse httpRequestResponse = API.getAPI().http().sendRequest(interceptedRequest);
@@ -86,12 +86,12 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
             if(Run_request.isScan(httpRequestResponse)){
                 //记录原始请求相关信息
                 String old_path = httpRequestResponse.request().pathWithoutQuery(); //这里有问题，bypasspro是通过拼接url解决
-                String query = httpRequestResponse.request().query();
+                String query = httpRequestResponse.request().query();   // 拿到query参数
                 String old_method = httpRequestResponse.request().method();
                 String old_resp = httpRequestResponse.response().toString();
 
                 //生成paylaod
-                List<BaseRequestEntry> payloads = new InitPayload().make_payload_v2(old_path,query);
+                List<BaseRequestEntry> payloads = new InitPayload().makePayload(old_path,query);
                 Log.addAllRequestNum(payloads.size()*2);        //计算请求数量,因为要FUZZ不同方法，所以乘2
 
 
@@ -111,7 +111,7 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
 
 
 
-    //扫描执行类
+    // 执行扫描类
     private class Run_request implements Runnable {
         public MontoyaApi api;
         public BaseRequestEntry baseRequest;
@@ -122,7 +122,7 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
         public String mode;
 
 
-        //构造函数
+        // 构造函数
         public Run_request(BaseRequestEntry baseRequest, String old_path, String old_method, String old_resp, HttpRequestResponse httpRequestResponse, String mode) {
             this.api = API.getAPI();
             this.baseRequest = baseRequest;
@@ -136,23 +136,12 @@ public class Scan implements ContextMenuItemsProvider, ProxyRequestHandler {
         @Override
         public void run() {
             //开扫
-            //FUZZ请求方法,来自浏览器的只有get和post
-            // 如果是get请求，分别fuzz post和trace。如果是post请求，fuzz get和post
-            HttpRequestResponse new_httpRequestResponse;
-            if (httpRequestResponse.request().method().equals("GET")) {
-                new_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "POST", baseRequest.path);
-                compare(httpRequestResponse,new_httpRequestResponse,mode);
+            // 这里加上了请求方法的FUZZ
+            HttpRequestResponse get_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "GET", baseRequest.path);
+            compare(httpRequestResponse,get_httpRequestResponse,mode);
 
-                new_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "TRACE", baseRequest.path);
-                compare(httpRequestResponse,new_httpRequestResponse,mode);
-
-            }else{
-                new_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "POST", baseRequest.path);
-                compare(httpRequestResponse,new_httpRequestResponse,mode);
-
-                new_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "TRACE", baseRequest.path);
-                compare(httpRequestResponse,new_httpRequestResponse,mode);
-            }
+            HttpRequestResponse post_httpRequestResponse = Utils.sentRequest(httpRequestResponse, "POST", baseRequest.path);
+            compare(httpRequestResponse,post_httpRequestResponse,mode);
         }
 
         public static boolean isScan(HttpRequestResponse httpRequestResponse){

@@ -63,7 +63,7 @@ public class Dashboard extends JPanel  {
         controlPanel.add(threadNumLabel);
 
         threadNumText = new JTextField(10);
-        threadNumText.setText("5");
+        threadNumText.setText("10");
         controlPanel.add(threadNumText);
 
 
@@ -127,7 +127,7 @@ public class Dashboard extends JPanel  {
     public int getThreadNum() {
 
         if(StringUtils.isBlank(threadNumText.getText())) {
-            return 5;   //默认5线程
+            return 10;   //默认10线程
         }
 
         return Integer.parseInt(threadNumText.getText());

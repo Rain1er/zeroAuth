@@ -11,7 +11,7 @@ public class ScanTest {
     public void testPaylod(){
         System.out.println(Utils.loadConfig("/config.yaml"));
         //new Main().make_payload_v2("/admin/getUserById/?id=1");
-        List<BaseRequestEntry> baseRequests = new InitPayload().make_payload_v2("/C6/JHSoft.Web.WorkFlat/RssModulesHttp.aspx","interfaceID=1");
+        List<BaseRequestEntry> baseRequests = new InitPayload().makePayload("/C6/JHSoft.Web.WorkFlat/RssModulesHttp.aspx","interfaceID=1");
 
         //用迭代器输出allRequests内容
         Iterator<BaseRequestEntry> iterator = baseRequests.iterator();

